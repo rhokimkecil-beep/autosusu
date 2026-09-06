@@ -433,8 +433,8 @@ td{padding:12px 16px;vertical-align:middle;color:var(--text)}
 
 /* ============ ANIMATIONS ============ */
 
-/* — Particles canvas dinonaktifkan — */
-#particles{display:none}
+/* — Floating particles canvas behind login — */
+#particles{position:fixed;inset:0;z-index:0;pointer-events:none}
 #ls{isolation:isolate}
 .lb{z-index:1;position:relative}
 
@@ -564,31 +564,20 @@ header{animation:headerIn .4s ease both}
 /* — Scrollbar thumb glow on active — */
 ::-webkit-scrollbar-thumb:hover{background:var(--cyan-dim);box-shadow:0 0 4px var(--cyan)}
 
-/* — will-change hanya pada elemen yang benar-benar animasi — */
-.btn-gen,.btn-login{will-change:filter,transform}
-.bar-inner{will-change:transform}
-#toast{will-change:transform,opacity}
-
-/* — Copy key button di tabel — */
-.btn-copy-key{
-  display:inline-flex;align-items:center;justify-content:center;
-  width:26px;height:26px;padding:0;
-  background:none;border:1px solid transparent;border-radius:5px;
-  color:var(--muted-2);cursor:pointer;transition:all .15s;flex-shrink:0;
-}
-.btn-copy-key svg{width:12px;height:12px;pointer-events:none}
-.btn-copy-key:hover{border-color:var(--cyan);color:var(--cyan);background:var(--cyan-dim)}
-.btn-copy-key.copied{border-color:var(--green);color:var(--green);background:var(--green-dim)}
-/* Key cell: flex agar key text + copy button sejajar */
-.kc-wrap{display:flex;align-items:center;gap:6px;white-space:nowrap}
-.kc-text{color:var(--cyan);font-weight:600;letter-spacing:.04em;font-family:var(--mono);font-size:12px}
-
-/* — Panel top border: static gradient, tidak ada animasi (hemat GPU) — */
+/* — Panel top border animated gradient — */
 .panel::before{
-  background:linear-gradient(90deg,var(--cyan),rgba(39,224,138,.4),transparent);
+  background:linear-gradient(90deg,var(--cyan),rgba(39,224,138,.6),var(--cyan));
+  background-size:200% 100%;
+  animation:borderSlide 3s linear infinite;
 }
+@keyframes borderSlide{from{background-position:0% 0}to{background-position:200% 0}}
 
-/* — Typing cursor dihapus — */
+/* — Typing cursor on login subtitle — */
+.lsub::after{
+  content:"█";color:var(--cyan);font-size:9px;
+  animation:blink .9s step-end infinite;margin-left:2px;
+}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
 
 /* — Dev count dot animation — */
 .dev-dot{animation:devPing 2s ease-in-out infinite}
@@ -614,6 +603,92 @@ header{animation:headerIn .4s ease both}
   to  {opacity:1;transform:translateX(0)}
 }
 .bulk-key-row{animation:bulkKeyIn .25s ease both}
+
+/* ============ ALERT BANNER ============ */
+#alert-banner{
+  position:fixed;top:58px;left:0;right:0;z-index:50;
+  display:flex;flex-direction:column;gap:0;
+}
+.alert-item{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:10px 32px;font-family:var(--mono);font-size:12px;
+  animation:slideDown .3s ease both;
+}
+.alert-item.warn{background:rgba(255,90,0,.18);border-bottom:1px solid rgba(255,90,0,.3);color:#ff8a4a}
+.alert-item.expired{background:rgba(255,77,109,.15);border-bottom:1px solid rgba(255,77,109,.3);color:var(--red)}
+@keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.alert-close{background:none;border:none;color:inherit;cursor:pointer;font-size:14px;opacity:.7}
+.alert-close:hover{opacity:1}
+
+/* ============ SORT ============ */
+.th-sort{cursor:pointer;user-select:none;transition:color .15s}
+.th-sort:hover{color:var(--cyan)}
+.sort-icon{font-size:9px;color:var(--muted-2);margin-left:3px}
+.sort-icon.asc{color:var(--cyan)}
+.sort-icon.desc{color:var(--cyan)}
+
+/* ============ PAGINATION ============ */
+.pagination{
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  padding:14px 20px;border-top:1px solid var(--border);flex-wrap:wrap;
+}
+.pg-btn{
+  min-width:32px;height:30px;padding:0 8px;
+  background:none;border:1px solid var(--border);border-radius:5px;
+  color:var(--muted);font-family:var(--mono);font-size:11px;cursor:pointer;transition:all .15s;
+}
+.pg-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+.pg-btn.active{background:var(--cyan-dim);border-color:var(--cyan);color:var(--cyan)}
+.pg-btn:disabled{opacity:.3;cursor:default}
+.pg-info{font-family:var(--mono);font-size:10px;color:var(--muted);padding:0 8px}
+
+/* ============ MODAL EXTEND / EDIT ============ */
+.modal-extend,.modal-editlabel{
+  padding:16px 22px;border-top:1px solid var(--border);
+}
+.modal-extend-title{
+  display:flex;align-items:center;gap:7px;
+  font-family:var(--mono);font-size:10.5px;color:var(--muted);letter-spacing:.04em;margin-bottom:10px;
+}
+.modal-extend-title svg{width:12px;height:12px;color:var(--cyan)}
+.extend-btns{display:flex;gap:7px;flex-wrap:wrap}
+.btn-ext{
+  padding:6px 13px;background:var(--surface);border:1px solid var(--border);border-radius:6px;
+  color:var(--muted);font-family:var(--mono);font-size:11px;cursor:pointer;transition:all .15s;
+}
+.btn-ext:hover{border-color:var(--cyan);color:var(--cyan);background:var(--cyan-dim)}
+.btn-ext-perm{border-color:rgba(255,184,77,.4);color:var(--amber)}
+.btn-ext-perm:hover{background:var(--amber-dim);border-color:var(--amber);color:var(--amber)}
+
+/* ============ ACTIVITY LOG ============ */
+.activity-log{max-height:200px;overflow-y:auto;padding:6px 0}
+.log-item{
+  display:flex;align-items:baseline;gap:10px;
+  padding:8px 22px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:11px;
+}
+.log-item:last-child{border-bottom:none}
+.log-time{color:var(--muted-2);flex-shrink:0;font-size:10px}
+.log-msg{color:var(--text);flex:1}
+.log-msg b{color:var(--cyan)}
+.log-ok .log-msg{color:var(--green)}
+.log-err .log-msg{color:var(--red)}
+.log-empty{text-align:center;padding:28px;color:var(--muted);font-size:11px;font-family:var(--mono)}
+
+/* ============ DATE FILTER ============ */
+.date-filter{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:4px;width:100%}
+.date-filter label{margin:0;font-size:10px}
+.date-filter input[type=date]{
+  background:var(--surface);border:1px solid var(--border);border-radius:6px;
+  padding:6px 10px;font-family:var(--mono);font-size:11px;color:var(--text);outline:none;
+  transition:border-color .15s;
+}
+.date-filter input[type=date]:focus{border-color:var(--cyan)}
+.date-filter input[type=date]::-webkit-calendar-picker-indicator{filter:invert(.5)}
+.btn-clear-date{
+  padding:5px 10px;background:none;border:1px solid var(--border);border-radius:5px;
+  color:var(--muted);font-family:var(--mono);font-size:10px;cursor:pointer;transition:all .15s;
+}
+.btn-clear-date:hover{border-color:var(--red);color:var(--red)}
 
 /* ============ RESPONSIVE ============ */
 @media (max-width:980px){
@@ -838,16 +913,33 @@ header{animation:headerIn .4s ease both}
           <button class="fb" onclick="setFilter('expired',this)">Expired</button>
           <button class="fb" onclick="setFilter('perm',this)">Permanent</button>
         </div>
+        <div class="date-filter">
+          <label>Dibuat dari</label>
+          <input type="date" id="df-from" onchange="applyFilter()"/>
+          <label>sampai</label>
+          <input type="date" id="df-to" onchange="applyFilter()"/>
+          <button class="btn-clear-date" onclick="clearDateFilter()">✕ Reset</button>
+        </div>
         <button class="btn-ref" onclick="loadKeys()">
           <svg viewBox="0 0 24 24" fill="none"><path d="M3 12a9 9 0 0115.5-6.36M21 12a9 9 0 01-15.5 6.36" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M17 3v5h-5M7 21v-5h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
         <button class="btn-exp" onclick="exportJSON()">JSON</button>
         <button class="btn-exp" onclick="exportTXT()">TXT</button>
+        <button class="btn-exp" onclick="exportCSV()">CSV</button>
+        <button class="btn-exp" onclick="exportLua()">Lua</button>
       </div>
       <div class="ktw">
         <table>
           <thead>
-            <tr><th>Key</th><th>Label</th><th>Status</th><th>Expired</th><th>Pengguna</th><th>Dibuat</th><th></th></tr>
+            <tr>
+              <th>Key</th>
+              <th class="th-sort" onclick="sortBy('label')">Label <span class="sort-icon" id="si-label">↕</span></th>
+              <th class="th-sort" onclick="sortBy('status')">Status <span class="sort-icon" id="si-status">↕</span></th>
+              <th class="th-sort" onclick="sortBy('expiredAt')">Expired <span class="sort-icon" id="si-expiredAt">↕</span></th>
+              <th>Pengguna</th>
+              <th class="th-sort" onclick="sortBy('createdAt')">Dibuat <span class="sort-icon" id="si-createdAt">↕</span></th>
+              <th></th>
+            </tr>
           </thead>
           <tbody id="tb">
             <tr class="lr"><td colspan="7"><span class="spin"></span>Memuat...</td></tr>
@@ -855,20 +947,33 @@ header{animation:headerIn .4s ease both}
         </table>
         <div id="es" class="es" style="display:none">Belum ada key.<br>Buat key pertama di panel kiri.</div>
       </div>
+      <!-- PAGINATION -->
+      <div id="pagination" class="pagination"></div>
     </div>
   </div>
-</main>
+</div>
+
+<!-- ACTIVITY LOG PANEL (bawah tabel) -->
+<div class="rc" style="padding:0 32px 48px;max-width:1440px;margin:0 auto;width:100%">
+  <div class="panel">
+    <div class="ch">
+      <div class="ch-left">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+        <span class="ch-title">Activity Log</span>
+      </div>
+      <button class="btn-exp" onclick="clearLog()">Hapus log</button>
+    </div>
+    <div id="activity-log" class="activity-log">
+      <div class="log-empty">Belum ada aktivitas.</div>
+    </div>
+  </div>
+</div>
 
 <!-- MODAL DETAIL -->
 <div id="modal">
   <div class="modal-box">
     <div class="modal-hdr">
-      <div style="display:flex;align-items:center;gap:8px">
-        <div class="modal-title" id="modal-key">—</div>
-        <button class="btn-copy-key" id="modal-copy-btn" title="Salin key" onclick="copyModalKey(this)" style="width:24px;height:24px">
-          <svg viewBox="0 0 24 24" fill="none"><rect x="9" y="9" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M5 15H4a1 1 0 01-1-1V4a1 1 0 011-1h10a1 1 0 011 1v1" stroke="currentColor" stroke-width="1.6"/></svg>
-        </button>
-      </div>
+      <div class="modal-title" id="modal-key">—</div>
       <button class="modal-close" onclick="closeModal()">
         <svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
       </button>
@@ -887,6 +992,30 @@ header{animation:headerIn .4s ease both}
         <div id="m-devlist"></div>
       </div>
     </div>
+    <!-- EXTEND KEY -->
+    <div class="modal-extend">
+      <div class="modal-extend-title">
+        <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.7"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+        Extend Durasi
+      </div>
+      <div class="extend-btns">
+        <button class="btn-ext" onclick="extendKey(7)">+7 hari</button>
+        <button class="btn-ext" onclick="extendKey(30)">+30 hari</button>
+        <button class="btn-ext" onclick="extendKey(90)">+90 hari</button>
+        <button class="btn-ext btn-ext-perm" onclick="extendKey(0)">Permanent</button>
+      </div>
+    </div>
+    <!-- EDIT LABEL -->
+    <div class="modal-editlabel">
+      <div class="modal-extend-title">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+        Edit Label
+      </div>
+      <div style="display:flex;gap:8px">
+        <input type="text" id="m-edit-label" placeholder="Label baru…" style="flex:1;padding:8px 11px;font-size:12px"/>
+        <button class="btn-ext" onclick="saveLabel()" style="white-space:nowrap">Simpan</button>
+      </div>
+    </div>
     <div class="modal-footer">
       <button class="btn-modal-rev" id="m-rev-btn">
         <svg viewBox="0 0 24 24" fill="none"><path d="M4 7h16M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2m2 0v13a1 1 0 01-1 1H8a1 1 0 01-1-1V7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -898,13 +1027,15 @@ header{animation:headerIn .4s ease both}
 </div>
 
 <div id="toast"></div>
+<!-- ALERT BANNER -->
+<div id="alert-banner" style="display:none"></div>
 
 <script>
 const CFG = {
-  apiKey:    "AIzaSyAPw1UXjpQIxxznw5Mo8VEkXtaty5upbos",
-  projectId: "autosusu-cprp",
+  apiKey:    "AIzaSyAMYjeaRjEg2fKk7MlI1XWJgpDItKrv9dk",
+  projectId: "autosusu-v2",
   adminUser: "admin",
-  adminPass: "prime",
+  adminPass: "123",
 };
 
 // ══ AUTH ══
@@ -1032,6 +1163,7 @@ async function generateKey(){
     document.getElementById('kr').classList.add('show');
     document.getElementById('kl').value='';
     toast('Key berhasil dibuat!','ok');
+    addLog(`Generate key <b>${key}</b> — ${label} | ${fmtExpLabel(exp)}`);
     loadKeys();
   }catch(e){toast('Gagal: '+e.message,'err');}
 }
@@ -1120,35 +1252,6 @@ function copyAllBulk(){
   navigator.clipboard.writeText(keys.join('\n')).then(()=>toast(`${keys.length} key disalin!`,'ok'));
 }
 
-// ── Copy key dari modal ──
-function copyModalKey(btn){
-  const key=document.getElementById('modal-key').textContent;
-  if(!key||key==='—')return;
-  navigator.clipboard.writeText(key).then(()=>{
-    btn.classList.add('copied');
-    btn.innerHTML='<svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-    toast('Key disalin!','ok');
-    setTimeout(()=>{
-      btn.classList.remove('copied');
-      btn.innerHTML='<svg viewBox="0 0 24 24" fill="none"><rect x="9" y="9" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M5 15H4a1 1 0 01-1-1V4a1 1 0 011-1h10a1 1 0 011 1v1" stroke="currentColor" stroke-width="1.6"/></svg>';
-    },1800);
-  });
-}
-
-// ── Copy key dari baris tabel ──
-function copyTableKey(btn, key){
-  navigator.clipboard.writeText(key).then(()=>{
-    // Ganti icon jadi centang sementara
-    btn.classList.add('copied');
-    btn.innerHTML='<svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-    toast('Key disalin!','ok');
-    setTimeout(()=>{
-      btn.classList.remove('copied');
-      btn.innerHTML='<svg viewBox="0 0 24 24" fill="none"><rect x="9" y="9" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M5 15H4a1 1 0 01-1-1V4a1 1 0 011-1h10a1 1 0 011 1v1" stroke="currentColor" stroke-width="1.6"/></svg>';
-    },1800);
-  }).catch(()=>toast('Gagal menyalin','err'));
-}
-
 // ══ LOAD & RENDER ══
 async function loadKeys(){
   const tb=document.getElementById('tb');
@@ -1159,8 +1262,11 @@ async function loadKeys(){
     applyFilter();
     updateStats(allKeys);
     renderChart(allKeys);
+    showAlerts(allKeys);
+    addLog(`Data dimuat — ${allKeys.length} key`);
   }catch(e){
     tb.innerHTML=`<tr class="lr"><td colspan="7" style="color:var(--red)">Error: ${e.message}</td></tr>`;
+    addLog('Gagal load data: '+e.message,'err');
   }
 }
 
@@ -1168,9 +1274,17 @@ function applyFilter(){
   const q=document.getElementById('si').value.toLowerCase();
   const now=Math.floor(Date.now()/1000);
   const H24=86400;
+  const fromVal=document.getElementById('df-from')?.value;
+  const toVal=document.getElementById('df-to')?.value;
+  const fromTs=fromVal?new Date(fromVal).getTime()/1000:null;
+  const toTs=toVal?new Date(toVal+'T23:59:59').getTime()/1000:null;
+
   let filtered=allKeys.filter(k=>{
     const matchQ=k._id.toLowerCase().includes(q)||(k.label||'').toLowerCase().includes(q);
     if(!matchQ)return false;
+    // Date filter
+    if(fromTs&&k.createdAt<fromTs)return false;
+    if(toTs&&k.createdAt>toTs)return false;
     const exp=k.expiredAt||0,perm=exp===0,dead=!perm&&now>exp;
     const soon=!perm&&!dead&&(exp-now)<=H24;
     if(activeFilter==='aktif')   return !dead&&!perm&&!soon;
@@ -1179,7 +1293,18 @@ function applyFilter(){
     if(activeFilter==='perm')    return perm;
     return true;
   });
-  renderTable(filtered);
+
+  // Sort
+  filtered=sortKeys(filtered);
+
+  // Pagination
+  const total=filtered.length;
+  const maxPage=Math.max(1,Math.ceil(total/PAGE_SIZE));
+  if(page>maxPage)page=maxPage;
+  const sliced=filtered.slice((page-1)*PAGE_SIZE, page*PAGE_SIZE);
+
+  renderTable(sliced);
+  renderPagination(total);
 }
 
 function filterTable(){applyFilter();}
@@ -1222,22 +1347,14 @@ function renderTable(keys){
     const devBadge=devCount>0
       ?`<span class="dev-count"><span class="dev-dot"></span>${devCount} device</span>`
       :`<span class="dev-count zero"><span class="dev-dot"></span>Belum ada</span>`;
-    const esc=k._id.replace(/'/g,"\\'");
-    return `<tr onclick="openModal('${esc}')">
-      <td>
-        <div class="kc-wrap">
-          <span class="kc-text">${k._id}</span>
-          <button class="btn-copy-key" title="Salin key" onclick="event.stopPropagation();copyTableKey(this,'${esc}')">
-            <svg viewBox="0 0 24 24" fill="none"><rect x="9" y="9" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M5 15H4a1 1 0 01-1-1V4a1 1 0 011-1h10a1 1 0 011 1v1" stroke="currentColor" stroke-width="1.6"/></svg>
-          </button>
-        </div>
-      </td>
+    return `<tr onclick="openModal('${k._id}')">
+      <td class="kc">${k._id}</td>
       <td>${k.label||'-'}</td>
       <td>${badge}</td>
       <td style="font-size:11px;color:var(--muted)">${expStr}</td>
       <td>${devBadge}</td>
       <td style="font-size:11px;color:var(--muted)">${crtStr}</td>
-      <td><button class="btn-rev" onclick="event.stopPropagation();revokeKey('${esc}')">Revoke</button></td>
+      <td><button class="btn-rev" onclick="event.stopPropagation();revokeKey('${k._id}')">Revoke</button></td>
     </tr>`;
   }).join('');
 }
@@ -1257,36 +1374,39 @@ function renderChart(keys){
   const labels=document.getElementById('chart-labels');
   const totalEl=document.getElementById('chart-total');
 
-  // Buat bucket 7 hari terakhir
+  const nowTs=Math.floor(Date.now()/1000);
   const now=new Date();
   const days=[];
   for(let i=6;i>=0;i--){
-    const d=new Date(now);
-    d.setDate(d.getDate()-i);
-    days.push({
-      date:d,
-      label:d.toLocaleDateString('id-ID',{weekday:'short'}),
-      count:0
-    });
+    const d=new Date(now);d.setDate(d.getDate()-i);
+    days.push({date:d,label:d.toLocaleDateString('id-ID',{weekday:'short'}),new:0,expired:0});
   }
 
-  // Hitung key per hari
   keys.forEach(k=>{
     if(!k.createdAt)return;
     const d=new Date(k.createdAt*1000);
     const ds=d.toDateString();
-    days.forEach(day=>{if(day.date.toDateString()===ds)day.count++;});
+    days.forEach(day=>{
+      if(day.date.toDateString()===ds){
+        day.new++;
+        const e=k.expiredAt||0;
+        if(e>0&&nowTs>e)day.expired++;
+      }
+    });
   });
 
-  const maxCount=Math.max(...days.map(d=>d.count),1);
-  const total=days.reduce((s,d)=>s+d.count,0);
-  totalEl.textContent=`${total} minggu ini`;
+  const maxCount=Math.max(...days.map(d=>d.new),1);
+  const weekTotal=days.reduce((s,d)=>s+d.new,0);
+  const totalActive=keys.filter(k=>{const e=k.expiredAt||0;return e===0||nowTs<e;}).length;
+  totalEl.textContent=`${weekTotal} minggu ini · ${totalActive} aktif`;
 
   bars.innerHTML=days.map(d=>{
-    const pct=Math.round((d.count/maxCount)*100);
-    return `<div class="bar-col">
-      <div class="bar-inner" style="height:${Math.max(pct,2)}%">
-        <div class="bar-tip">${d.count} key</div>
+    const pct=Math.round((d.new/maxCount)*100);
+    const expPct=d.new>0?Math.round((d.expired/d.new)*100):0;
+    return `<div class="bar-col" style="position:relative">
+      <div class="bar-inner" style="height:${Math.max(pct,2)}%;position:relative">
+        <div class="bar-tip">${d.new} dibuat${d.expired>0?' · '+d.expired+' expired':''}</div>
+        ${d.expired>0?`<div style="position:absolute;bottom:0;left:0;right:0;height:${expPct}%;background:rgba(255,77,109,.55);border-radius:2px 2px 0 0"></div>`:''}
       </div>
     </div>`;
   }).join('');
@@ -1336,6 +1456,10 @@ function openModal(keyId){
     }).join('');
   }
 
+  // Pre-fill edit label
+  const editLabelEl=document.getElementById('m-edit-label');
+  if(editLabelEl)editLabelEl.value=k.label||'';
+
   document.getElementById('m-rev-btn').onclick=()=>{
     closeModal();
     revokeKey(keyId);
@@ -1354,9 +1478,15 @@ document.getElementById('modal').addEventListener('click',e=>{
 
 // ══ REVOKE ══
 async function revokeKey(key){
-  if(!confirm(`Revoke key ${key}?\n\nKey ini akan langsung tidak bisa dipakai.`))return;
-  try{await fbDel(`keys/${key}`);toast('Key direvoke!','ok');loadKeys();}
-  catch(e){toast('Gagal: '+e.message,'err');}
+  // Konfirmasi dialog yang lebih jelas
+  const confirmed=confirm(`⚠ REVOKE KEY?\n\n${key}\n\nKey ini akan langsung dihapus dan tidak bisa dipakai lagi.\nTindakan ini tidak bisa dibatalkan!`);
+  if(!confirmed)return;
+  try{
+    await fbDel(`keys/${key}`);
+    toast('Key direvoke!','ok');
+    addLog(`Revoke <b>${key}</b>`,'err');
+    loadKeys();
+  }catch(e){toast('Gagal: '+e.message,'err');addLog('Gagal revoke: '+e.message,'err');}
 }
 
 // ══ EXPORT ══
@@ -1364,6 +1494,7 @@ function exportJSON(){
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([JSON.stringify(allKeys,null,2)],{type:'application/json'}));
   a.download=`autosusu_keys_${Date.now()}.json`;a.click();
+  addLog(`Export JSON (${allKeys.length} key)`);
 }
 function exportTXT(){
   const now=Math.floor(Date.now()/1000);
@@ -1375,6 +1506,175 @@ function exportTXT(){
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([txt],{type:'text/plain'}));
   a.download=`autosusu_keys_${Date.now()}.txt`;a.click();
+  addLog(`Export TXT (${allKeys.length} key)`);
+}
+// ── 9. Export CSV ──
+function exportCSV(){
+  const now=Math.floor(Date.now()/1000);
+  const rows=[['Key','Label','Status','Expired','CreatedAt','Devices']];
+  allKeys.forEach(k=>{
+    const e=k.expiredAt||0;
+    const st=e===0?'PERMANENT':now>e?'EXPIRED':'AKTIF';
+    const expStr=e===0?'Permanent':new Date(e*1000).toLocaleDateString('id-ID');
+    const crtStr=k.createdAt?new Date(k.createdAt*1000).toLocaleDateString('id-ID'):'-';
+    const devs=Array.isArray(k.devices)?k.devices.join('|'):'-';
+    rows.push([k._id,k.label||'-',st,expStr,crtStr,devs]);
+  });
+  const csv=rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}));
+  a.download=`autosusu_keys_${Date.now()}.csv`;a.click();
+  addLog(`Export CSV (${allKeys.length} key)`);
+}
+// ── 9. Export Lua ──
+function exportLua(){
+  const now=Math.floor(Date.now()/1000);
+  const lines=allKeys.map(k=>{
+    const e=k.expiredAt||0;
+    const expStr=e===0?'0 --[[PERMANENT]]':String(e)+` --[[${new Date(e*1000).toLocaleDateString('id-ID')}]]`;
+    return`  ["${k._id}"] = ${expStr},`;
+  }).join('\n');
+  const lua=`-- AutoSusu CPRP - Valid Keys\n-- Generated: ${new Date().toLocaleString('id-ID')}\nlocal VALID_KEYS = {\n${lines}\n}\nreturn VALID_KEYS`;
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([lua],{type:'text/plain'}));
+  a.download=`autosusu_VALID_KEYS_${Date.now()}.lua`;a.click();
+  addLog(`Export Lua (${allKeys.length} key)`);
+}
+
+// ══ SORT ══
+let sortField='createdAt',sortDir='desc';
+function sortBy(field){
+  if(sortField===field) sortDir=sortDir==='asc'?'desc':'asc';
+  else{sortField=field;sortDir='asc';}
+  // Update icons
+  document.querySelectorAll('.sort-icon').forEach(el=>{el.textContent='↕';el.className='sort-icon';});
+  const icon=document.getElementById('si-'+field);
+  if(icon){icon.textContent=sortDir==='asc'?'↑':'↓';icon.className='sort-icon '+(sortDir==='asc'?'asc':'desc');}
+  applyFilter();
+}
+function sortKeys(arr){
+  return [...arr].sort((a,b)=>{
+    let va=a[sortField]??'', vb=b[sortField]??'';
+    if(sortField==='status'){
+      const rank=k=>{const e=k.expiredAt||0,p=e===0,d=!p&&Math.floor(Date.now()/1000)>e;return p?2:d?0:1;};
+      va=rank(a);vb=rank(b);
+    }
+    if(typeof va==='string')return sortDir==='asc'?va.localeCompare(vb):vb.localeCompare(va);
+    return sortDir==='asc'?va-vb:vb-va;
+  });
+}
+
+// ══ PAGINATION ══
+let page=1;const PAGE_SIZE=50;
+function renderPagination(total){
+  const pages=Math.ceil(total/PAGE_SIZE);
+  const el=document.getElementById('pagination');
+  if(pages<=1){el.innerHTML='';return;}
+  let html=`<button class="pg-btn" onclick="gotoPage(${page-1})" ${page===1?'disabled':''}>‹</button>`;
+  for(let i=1;i<=pages;i++){
+    if(pages>7&&(i>2&&i<page-1||i>page+1&&i<pages-1)){
+      if(i===3||i===pages-2)html+=`<span class="pg-info">…</span>`;
+      continue;
+    }
+    html+=`<button class="pg-btn ${i===page?'active':''}" onclick="gotoPage(${i})">${i}</button>`;
+  }
+  html+=`<button class="pg-btn" onclick="gotoPage(${page+1})" ${page===pages?'disabled':''}>›</button>`;
+  html+=`<span class="pg-info">${total} key</span>`;
+  el.innerHTML=html;
+}
+function gotoPage(p){page=p;applyFilter();}
+
+// ══ DATE FILTER ══
+function clearDateFilter(){
+  document.getElementById('df-from').value='';
+  document.getElementById('df-to').value='';
+  applyFilter();
+}
+
+// ══ ALERT BANNER ══
+function showAlerts(keys){
+  const now=Math.floor(Date.now()/1000);
+  const H24=86400;
+  const soon=keys.filter(k=>{const e=k.expiredAt||0;return e>0&&!( now>e)&&(e-now)<=H24;});
+  const dead=keys.filter(k=>{const e=k.expiredAt||0;return e>0&&now>e;});
+  const banner=document.getElementById('alert-banner');
+  const items=[];
+  if(soon.length)items.push(`<div class="alert-item warn"><span>⚠ <b>${soon.length}</b> key akan expired dalam 24 jam!</span><button class="alert-close" onclick="setFilter('soon',document.querySelector('.fb:nth-child(3))');this.parentElement.remove()">✕</button></div>`);
+  if(dead.length)items.push(`<div class="alert-item expired"><span>🔴 <b>${dead.length}</b> key sudah expired.</span><button class="alert-close" onclick="this.parentElement.remove()">✕</button></div>`);
+  banner.innerHTML=items.join('');
+  banner.style.display=items.length?'flex':'none';
+}
+
+// ══ ACTIVITY LOG ══
+const actLog=[];
+function addLog(msg,type='ok'){
+  const t=new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  actLog.unshift({t,msg,type});
+  if(actLog.length>100)actLog.pop();
+  renderLog();
+}
+function renderLog(){
+  const el=document.getElementById('activity-log');
+  if(!el)return;
+  if(!actLog.length){el.innerHTML='<div class="log-empty">Belum ada aktivitas.</div>';return;}
+  el.innerHTML=actLog.slice(0,30).map(l=>
+    `<div class="log-item log-${l.type}"><span class="log-time">${l.t}</span><span class="log-msg">${l.msg}</span></div>`
+  ).join('');
+}
+function clearLog(){actLog.length=0;renderLog();toast('Log dihapus','ok');}
+
+// ══ EXTEND KEY ══
+async function extendKey(days){
+  if(!modalKey)return;
+  const k=allKeys.find(x=>x._id===modalKey);
+  if(!k)return;
+  const now=Math.floor(Date.now()/1000);
+  let newExp;
+  if(days===0){newExp=0;}
+  else{
+    const base=k.expiredAt&&k.expiredAt>now?k.expiredAt:now;
+    newExp=base+(days*86400);
+  }
+  try{
+    await fbSet(`keys/${modalKey}`,{
+      key:fStr(k._id||modalKey),
+      label:fStr(k.label||'-'),
+      expiredAt:fInt(newExp),
+      createdAt:fInt(k.createdAt||now),
+      devices:fArr(Array.isArray(k.devices)?k.devices:[]),
+      active:{booleanValue:true}
+    });
+    const msg=days===0?'Key dijadikan Permanent!':'+'+days+' hari ditambahkan ke key';
+    toast(msg,'ok');
+    addLog(`Extend <b>${modalKey}</b> ${days===0?'→ PERMANENT':'+'+days+' hari'}`);
+    await loadKeys();
+    openModal(modalKey);
+  }catch(e){toast('Gagal extend: '+e.message,'err');addLog('Gagal extend: '+e.message,'err');}
+}
+
+// ══ EDIT LABEL ══
+async function saveLabel(){
+  if(!modalKey)return;
+  const newLabel=document.getElementById('m-edit-label').value.trim();
+  if(!newLabel){toast('Label tidak boleh kosong','err');return;}
+  const k=allKeys.find(x=>x._id===modalKey);
+  if(!k)return;
+  const now=Math.floor(Date.now()/1000);
+  try{
+    await fbSet(`keys/${modalKey}`,{
+      key:fStr(k._id||modalKey),
+      label:fStr(newLabel),
+      expiredAt:fInt(k.expiredAt||0),
+      createdAt:fInt(k.createdAt||now),
+      devices:fArr(Array.isArray(k.devices)?k.devices:[]),
+      active:{booleanValue:true}
+    });
+    toast('Label berhasil diubah!','ok');
+    addLog(`Edit label <b>${modalKey}</b> → "${newLabel}"`);
+    document.getElementById('m-edit-label').value='';
+    await loadKeys();
+    openModal(modalKey);
+  }catch(e){toast('Gagal: '+e.message,'err');addLog('Gagal edit label: '+e.message,'err');}
 }
 
 // ══ AUTO UPDATE ══
@@ -1442,8 +1742,55 @@ tick();setInterval(tick,1000);
 //  ANIMATIONS
 // ══════════════════════════════════════════════
 
-// ── 1. Particles — dinonaktifkan (terlalu berat, diganti CSS gradient) ──
-// Canvas disembunyikan via CSS, tidak ada rAF loop
+// ── 1. Floating particles on login screen ────
+(function(){
+  const canvas=document.getElementById('particles');
+  const ctx=canvas.getContext('2d');
+  let W,H,pts=[];
+  function resize(){
+    W=canvas.width=window.innerWidth;
+    H=canvas.height=window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize',resize);
+
+  function mkPt(){
+    return{
+      x:Math.random()*W, y:Math.random()*H,
+      vx:(Math.random()-.5)*.35, vy:(Math.random()-.5)*.35,
+      r:Math.random()*1.5+.5,
+      a:Math.random(),
+      color:Math.random()>.5?'0,224,240':'39,224,138'
+    };
+  }
+  for(let i=0;i<72;i++)pts.push(mkPt());
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    // connect nearby points
+    for(let i=0;i<pts.length;i++){
+      for(let j=i+1;j<pts.length;j++){
+        const dx=pts[i].x-pts[j].x, dy=pts[i].y-pts[j].y;
+        const d=Math.sqrt(dx*dx+dy*dy);
+        if(d<110){
+          ctx.strokeStyle=`rgba(0,224,240,${.18*(1-d/110)})`;
+          ctx.lineWidth=.6;
+          ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);ctx.stroke();
+        }
+      }
+      const p=pts[i];
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(${p.color},${p.a*.7+.1})`;
+      ctx.fill();
+      p.x+=p.vx; p.y+=p.vy;
+      if(p.x<-10)p.x=W+10; if(p.x>W+10)p.x=-10;
+      if(p.y<-10)p.y=H+10; if(p.y>H+10)p.y=-10;
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
 
 // ── 2. Stat number count-up animation ────────
 function animateCount(el, target, duration=600){
@@ -1526,7 +1873,17 @@ document.querySelector('.btn-login').addEventListener('click',function(e){
   setTimeout(()=>r.remove(),600);
 });
 
-// ── 8. Panel re-animation on loadKeys dinonaktifkan (menyebabkan layout thrash) ──
+// ── 8. Panels animate in when main panel shown ─
+const _origLoadKeys=loadKeys;
+window.loadKeys=async function(){
+  // trigger re-animation on panels
+  document.querySelectorAll('.lc > .panel,.rc > .panel').forEach(p=>{
+    p.style.animation='none';
+    p.offsetHeight; // reflow
+    p.style.animation='';
+  });
+  return _origLoadKeys();
+};
 
 // ── 9. Cursor-tracking glow on login card ─────
 document.querySelector('.lb').addEventListener('mousemove',function(e){
