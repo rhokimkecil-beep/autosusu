@@ -433,8 +433,8 @@ td{padding:12px 16px;vertical-align:middle;color:var(--text)}
 
 /* ============ ANIMATIONS ============ */
 
-/* — Floating particles canvas behind login — */
-#particles{position:fixed;inset:0;z-index:0;pointer-events:none}
+/* — Particles canvas dinonaktifkan — */
+#particles{display:none}
 #ls{isolation:isolate}
 .lb{z-index:1;position:relative}
 
@@ -564,20 +564,31 @@ header{animation:headerIn .4s ease both}
 /* — Scrollbar thumb glow on active — */
 ::-webkit-scrollbar-thumb:hover{background:var(--cyan-dim);box-shadow:0 0 4px var(--cyan)}
 
-/* — Panel top border animated gradient — */
-.panel::before{
-  background:linear-gradient(90deg,var(--cyan),rgba(39,224,138,.6),var(--cyan));
-  background-size:200% 100%;
-  animation:borderSlide 3s linear infinite;
-}
-@keyframes borderSlide{from{background-position:0% 0}to{background-position:200% 0}}
+/* — will-change hanya pada elemen yang benar-benar animasi — */
+.btn-gen,.btn-login{will-change:filter,transform}
+.bar-inner{will-change:transform}
+#toast{will-change:transform,opacity}
 
-/* — Typing cursor on login subtitle — */
-.lsub::after{
-  content:"█";color:var(--cyan);font-size:9px;
-  animation:blink .9s step-end infinite;margin-left:2px;
+/* — Copy key button di tabel — */
+.btn-copy-key{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:26px;height:26px;padding:0;
+  background:none;border:1px solid transparent;border-radius:5px;
+  color:var(--muted-2);cursor:pointer;transition:all .15s;flex-shrink:0;
 }
-@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.btn-copy-key svg{width:12px;height:12px;pointer-events:none}
+.btn-copy-key:hover{border-color:var(--cyan);color:var(--cyan);background:var(--cyan-dim)}
+.btn-copy-key.copied{border-color:var(--green);color:var(--green);background:var(--green-dim)}
+/* Key cell: flex agar key text + copy button sejajar */
+.kc-wrap{display:flex;align-items:center;gap:6px;white-space:nowrap}
+.kc-text{color:var(--cyan);font-weight:600;letter-spacing:.04em;font-family:var(--mono);font-size:12px}
+
+/* — Panel top border: static gradient, tidak ada animasi (hemat GPU) — */
+.panel::before{
+  background:linear-gradient(90deg,var(--cyan),rgba(39,224,138,.4),transparent);
+}
+
+/* — Typing cursor dihapus — */
 
 /* — Dev count dot animation — */
 .dev-dot{animation:devPing 2s ease-in-out infinite}
@@ -852,7 +863,12 @@ header{animation:headerIn .4s ease both}
 <div id="modal">
   <div class="modal-box">
     <div class="modal-hdr">
-      <div class="modal-title" id="modal-key">—</div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div class="modal-title" id="modal-key">—</div>
+        <button class="btn-copy-key" id="modal-copy-btn" title="Salin key" onclick="copyModalKey(this)" style="width:24px;height:24px">
+          <svg viewBox="0 0 24 24" fill="none"><rect x="9" y="9" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M5 15H4a1 1 0 01-1-1V4a1 1 0 011-1h10a1 1 0 011 1v1" stroke="currentColor" stroke-width="1.6"/></svg>
+        </button>
+      </div>
       <button class="modal-close" onclick="closeModal()">
         <svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
       </button>
@@ -885,8 +901,8 @@ header{animation:headerIn .4s ease both}
 
 <script>
 const CFG = {
-  apiKey:    "AIzaSyAMYjeaRjEg2fKk7MlI1XWJgpDItKrv9dk",
-  projectId: "autosusu-v2",
+  apiKey:    "AIzaSyAPw1UXjpQIxxznw5Mo8VEkXtaty5upbos",
+  projectId: "autosusu-cprp",
   adminUser: "admin",
   adminPass: "prime",
 };
@@ -1104,6 +1120,35 @@ function copyAllBulk(){
   navigator.clipboard.writeText(keys.join('\n')).then(()=>toast(`${keys.length} key disalin!`,'ok'));
 }
 
+// ── Copy key dari modal ──
+function copyModalKey(btn){
+  const key=document.getElementById('modal-key').textContent;
+  if(!key||key==='—')return;
+  navigator.clipboard.writeText(key).then(()=>{
+    btn.classList.add('copied');
+    btn.innerHTML='<svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    toast('Key disalin!','ok');
+    setTimeout(()=>{
+      btn.classList.remove('copied');
+      btn.innerHTML='<svg viewBox="0 0 24 24" fill="none"><rect x="9" y="9" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M5 15H4a1 1 0 01-1-1V4a1 1 0 011-1h10a1 1 0 011 1v1" stroke="currentColor" stroke-width="1.6"/></svg>';
+    },1800);
+  });
+}
+
+// ── Copy key dari baris tabel ──
+function copyTableKey(btn, key){
+  navigator.clipboard.writeText(key).then(()=>{
+    // Ganti icon jadi centang sementara
+    btn.classList.add('copied');
+    btn.innerHTML='<svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    toast('Key disalin!','ok');
+    setTimeout(()=>{
+      btn.classList.remove('copied');
+      btn.innerHTML='<svg viewBox="0 0 24 24" fill="none"><rect x="9" y="9" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M5 15H4a1 1 0 01-1-1V4a1 1 0 011-1h10a1 1 0 011 1v1" stroke="currentColor" stroke-width="1.6"/></svg>';
+    },1800);
+  }).catch(()=>toast('Gagal menyalin','err'));
+}
+
 // ══ LOAD & RENDER ══
 async function loadKeys(){
   const tb=document.getElementById('tb');
@@ -1177,14 +1222,22 @@ function renderTable(keys){
     const devBadge=devCount>0
       ?`<span class="dev-count"><span class="dev-dot"></span>${devCount} device</span>`
       :`<span class="dev-count zero"><span class="dev-dot"></span>Belum ada</span>`;
-    return `<tr onclick="openModal('${k._id}')">
-      <td class="kc">${k._id}</td>
+    const esc=k._id.replace(/'/g,"\\'");
+    return `<tr onclick="openModal('${esc}')">
+      <td>
+        <div class="kc-wrap">
+          <span class="kc-text">${k._id}</span>
+          <button class="btn-copy-key" title="Salin key" onclick="event.stopPropagation();copyTableKey(this,'${esc}')">
+            <svg viewBox="0 0 24 24" fill="none"><rect x="9" y="9" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M5 15H4a1 1 0 01-1-1V4a1 1 0 011-1h10a1 1 0 011 1v1" stroke="currentColor" stroke-width="1.6"/></svg>
+          </button>
+        </div>
+      </td>
       <td>${k.label||'-'}</td>
       <td>${badge}</td>
       <td style="font-size:11px;color:var(--muted)">${expStr}</td>
       <td>${devBadge}</td>
       <td style="font-size:11px;color:var(--muted)">${crtStr}</td>
-      <td><button class="btn-rev" onclick="event.stopPropagation();revokeKey('${k._id}')">Revoke</button></td>
+      <td><button class="btn-rev" onclick="event.stopPropagation();revokeKey('${esc}')">Revoke</button></td>
     </tr>`;
   }).join('');
 }
@@ -1389,55 +1442,8 @@ tick();setInterval(tick,1000);
 //  ANIMATIONS
 // ══════════════════════════════════════════════
 
-// ── 1. Floating particles on login screen ────
-(function(){
-  const canvas=document.getElementById('particles');
-  const ctx=canvas.getContext('2d');
-  let W,H,pts=[];
-  function resize(){
-    W=canvas.width=window.innerWidth;
-    H=canvas.height=window.innerHeight;
-  }
-  resize();
-  window.addEventListener('resize',resize);
-
-  function mkPt(){
-    return{
-      x:Math.random()*W, y:Math.random()*H,
-      vx:(Math.random()-.5)*.35, vy:(Math.random()-.5)*.35,
-      r:Math.random()*1.5+.5,
-      a:Math.random(),
-      color:Math.random()>.5?'0,224,240':'39,224,138'
-    };
-  }
-  for(let i=0;i<72;i++)pts.push(mkPt());
-
-  function draw(){
-    ctx.clearRect(0,0,W,H);
-    // connect nearby points
-    for(let i=0;i<pts.length;i++){
-      for(let j=i+1;j<pts.length;j++){
-        const dx=pts[i].x-pts[j].x, dy=pts[i].y-pts[j].y;
-        const d=Math.sqrt(dx*dx+dy*dy);
-        if(d<110){
-          ctx.strokeStyle=`rgba(0,224,240,${.18*(1-d/110)})`;
-          ctx.lineWidth=.6;
-          ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);ctx.stroke();
-        }
-      }
-      const p=pts[i];
-      ctx.beginPath();
-      ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-      ctx.fillStyle=`rgba(${p.color},${p.a*.7+.1})`;
-      ctx.fill();
-      p.x+=p.vx; p.y+=p.vy;
-      if(p.x<-10)p.x=W+10; if(p.x>W+10)p.x=-10;
-      if(p.y<-10)p.y=H+10; if(p.y>H+10)p.y=-10;
-    }
-    requestAnimationFrame(draw);
-  }
-  draw();
-})();
+// ── 1. Particles — dinonaktifkan (terlalu berat, diganti CSS gradient) ──
+// Canvas disembunyikan via CSS, tidak ada rAF loop
 
 // ── 2. Stat number count-up animation ────────
 function animateCount(el, target, duration=600){
@@ -1520,17 +1526,7 @@ document.querySelector('.btn-login').addEventListener('click',function(e){
   setTimeout(()=>r.remove(),600);
 });
 
-// ── 8. Panels animate in when main panel shown ─
-const _origLoadKeys=loadKeys;
-window.loadKeys=async function(){
-  // trigger re-animation on panels
-  document.querySelectorAll('.lc > .panel,.rc > .panel').forEach(p=>{
-    p.style.animation='none';
-    p.offsetHeight; // reflow
-    p.style.animation='';
-  });
-  return _origLoadKeys();
-};
+// ── 8. Panel re-animation on loadKeys dinonaktifkan (menyebabkan layout thrash) ──
 
 // ── 9. Cursor-tracking glow on login card ─────
 document.querySelector('.lb').addEventListener('mousemove',function(e){
