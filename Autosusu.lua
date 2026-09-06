@@ -61,7 +61,7 @@ local FIREBASE_API_KEY    = "AIzaSyAMYjeaRjEg2fKk7MlI1XWJgpDItKrv9dk"
 -- ════════════════════════════════════════════════
 --  AUTO UPDATE CONFIG
 -- ════════════════════════════════════════════════
-local CURRENT_VERSION  = "4.8"   -- versi script ini (admin update via panel)
+local CURRENT_VERSION  = "4.5"   -- versi script ini (admin update via panel)
 local GITHUB_RAW_URL   = "https://raw.githubusercontent.com/prime22299/autosusu/main/Autosusu.lua"
 local UPDATE_CHECK_DOC = "config/version" -- Firestore path untuk versi terbaru
 
@@ -224,7 +224,25 @@ local function downloadAndUpdate(dlUrl)
         updateStatus = 'Selesai! Reload...'
         chat('{00FF88}[PrimeBot]{FFFFFF} Update berhasil! Reload otomatis dalam 2 detik...')
         lua_thread.create(function()
-            wait(2000)
+            -- STEP 1: stop bot dulu supaya tidak ada thread yang masih jalan
+            botRunning = false
+            botPaused  = false
+
+            -- STEP 2: tutup SEMUA panel imgui sebelum reload
+            -- tanpa ini imgui OnFrame crash saat Lua state lama di-destroy
+            if showPanel   then showPanel[0]   = false end
+            if showLicense then showLicense[0] = false end
+
+            -- STEP 3: tunggu imgui selesai render 1-2 frame dengan state false
+            wait(300)
+
+            -- STEP 4: bersihkan task player
+            pcall(clearCharTasks, PLAYER_PED)
+
+            -- STEP 5: tunggu cukup lama biar semua thread bersih
+            wait(1800)
+
+            -- STEP 6: reload aman
             thisScript():reload()
         end)
     end)
@@ -894,7 +912,7 @@ function main()
         end
     end)
 
-    chat("{00FF00}[PrimeBot v4.8]{FFFFFF} Panel Ready! Ketik {00FF00}/autosusu")
+    chat("{00FF00}[PrimeBot v4.5]{FFFFFF} Panel Ready! Ketik {00FF00}/autosusu")
 
     wait(1000)
     silentCheck = true
