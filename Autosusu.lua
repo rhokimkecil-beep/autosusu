@@ -1242,27 +1242,64 @@ imgui.OnFrame(
                 imgui.Spacing()
                 imgui.Separator()
                 imgui.Spacing()
-                imgui.Text(utf8("Preset Warna Cepat:"))
+                imgui.Text(utf8("🎨 Preset Warna Gradient Fantasi:"))
+                imgui.Spacing()
 
                 local presets = {
-                    {"Cyan Neon",    0,    0.65, 0.85},
-                    {"Purple Cyber", 0.6,  0.15, 0.85},
-                    {"Red Blood",    0.85, 0.1,  0.15},
-                    {"Emerald",      0.1,  0.85, 0.4},
+                    {"Cyan Neon",       0,    0.65, 0.85},
+                    {"Purple Cyber",    0.6,  0.15, 0.85},
+                    {"Red Blood",       0.85, 0.1,  0.15},
+                    {"Emerald",         0.1,  0.85, 0.4},
+                    {"Rainbow Dream",   1,    0.2,  0.8},
+                    {"Galaxy Night",    0.2,  0.1,  0.6},
+                    {"Neon Pink",       1,    0.1,  0.6},
+                    {"Ocean Blue",      0,    0.5,  1},
+                    {"Mystic Purple",   0.7,  0.2,  0.9},
+                    {"Fire Orange",     1,    0.5,  0},
+                    {"Forest Green",    0.2,  0.7,  0.3},
+                    {"Gold Aurora",     1,    0.8,  0.1},
+                    {"Sakura Pink",     1,    0.6,  0.8},
+                    {"Ice Blue",        0.4,  0.8,  1},
+                    {"Void Dark",       0.1,  0.1,  0.2},
+                    {"Sunset Warm",     1,    0.4,  0.2},
                 }
+                
+                -- Display in grid (2 per row)
+                local btnWidth = (imgui.GetContentRegionAvail().x - imgui.GetStyle().ItemSpacing.x) / 2
                 for i, p in ipairs(presets) do
-                    if imgui.Button(utf8(p[1]), imgui.ImVec2(100,32)) then
+                    imgui.PushStyleColor(imgui.Col.Button, 
+                        imgui.ImVec4(p[2]*0.8, p[3]*0.8, p[4]*0.8, 0.8))
+                    imgui.PushStyleColor(imgui.Col.ButtonHovered, 
+                        imgui.ImVec4(p[2], p[3], p[4], 1))
+                    
+                    if imgui.Button(utf8(p[1]), imgui.ImVec2(btnWidth, 40)) then
                         themeColor[0]=p[2]
                         themeColor[1]=p[3]
                         themeColor[2]=p[4]
                         applyTheme()
+                        chat("{00FF88}[Theme]{FFFFFF} Changed to: " .. p[1])
                     end
-                    if i < #presets then imgui.SameLine() end
+                    imgui.PopStyleColor(2)
+                    
+                    if i % 2 == 0 then
+                        imgui.Spacing()
+                    else
+                        imgui.SameLine()
+                    end
                 end
                 imgui.EndTabItem()
             end
 
-            -- ── TAB 5: KONTAK ──
+            -- ── TAB 5: CHEAT MENU ──
+            if imgui.BeginTabItem(utf8("🎮 Cheat Menu")) then
+                imgui.Spacing()
+                imgui.Text(utf8("Cheat Menu - Coming Soon"))
+                imgui.Spacing()
+                
+                imgui.EndTabItem()
+            end
+
+            -- ── TAB 6: KONTAK ──
             if imgui.BeginTabItem(utf8("Kontak & Media")) then
                 imgui.Spacing()
                 imgui.TextColored(imgui.ImVec4(0.2,0.7,1,1),
