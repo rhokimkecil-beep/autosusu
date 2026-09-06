@@ -1291,7 +1291,7 @@ imgui.OnFrame(
             end
 
             -- ── TAB 5: CHEAT MENU ──
-            if imgui.BeginTabItem(utf8("🎮 Cheat Menu")) then
+            if imgui.BeginTabItem(utf8("Cheat Menu")) then
                 imgui.Spacing()
                 imgui.Text(utf8("Cheat Menu - Coming Soon"))
                 imgui.Spacing()
