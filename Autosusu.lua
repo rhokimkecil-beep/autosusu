@@ -1,6 +1,6 @@
 script_name("AutoSusu_CPRP")
 script_author("PrimeSamp - cleaned by dev")
-script_version("4.9")
+script_version("5.0")
 
 require("lib.moonloader")
 local sampEvents = require("lib.samp.events")
@@ -61,7 +61,7 @@ local FIREBASE_API_KEY    = "AIzaSyAMYjeaRjEg2fKk7MlI1XWJgpDItKrv9dk"
 -- ════════════════════════════════════════════════
 --  AUTO UPDATE CONFIG
 -- ════════════════════════════════════════════════
-local CURRENT_VERSION  = "4.9"   -- versi script ini (admin update via panel)
+local CURRENT_VERSION  = "5.0"   -- versi script ini (admin update via panel)
 local GITHUB_RAW_URL   = "https://raw.githubusercontent.com/prime22299/autosusu/main/Autosusu.lua"
 local UPDATE_CHECK_DOC = "config/version" -- Firestore path untuk versi terbaru
 
@@ -912,7 +912,7 @@ function main()
         end
     end)
 
-    chat("{00FF00}[PrimeBot v4.9]{FFFFFF} Panel Ready! Ketik {00FF00}/autosusu")
+    chat("{00FF00}[PrimeBot v5.0]{FFFFFF} Panel Ready! Ketik {00FF00}/autosusu")
 
     wait(1000)
     silentCheck = true
@@ -936,7 +936,7 @@ imgui.OnFrame(
             imgui.WindowFlags.NoCollapse)
 
         imgui.Spacing()
-        imgui.TextColored(imgui.ImVec4(0,0.85,1,1), utf8("AutoSusu CPRP v4.9 — Key License"))
+        imgui.TextColored(imgui.ImVec4(0,0.85,1,1), utf8("AutoSusu CPRP v5.0 — Key License"))
         imgui.Separator()
         imgui.Spacing()
 
@@ -1029,7 +1029,7 @@ imgui.OnFrame(
         end
 
         imgui.SetNextWindowSize(imgui.ImVec2(490, 560), imgui.Cond.FirstUseEver)
-        imgui.Begin(utf8("AutoSusu CPRP v4.9 (Prime Edit)"), showPanel)
+        imgui.Begin(utf8("AutoSusu CPRP v5.0)"), showPanel)
 
         local statusLabel = botRunning
             and (botPaused and "DIJEDA" or "BOT BERJALAN")
