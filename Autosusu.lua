@@ -1,6 +1,6 @@
 script_name("AutoSusu_CPRP")
 script_author("PrimeSamp - cleaned by dev")
-script_version("5.6")
+script_version("4.9")
 
 require("lib.moonloader")
 local sampEvents = require("lib.samp.events")
@@ -86,7 +86,7 @@ local FIREBASE_API_KEY    = "AIzaSyAMYjeaRjEg2fKk7MlI1XWJgpDItKrv9dk"
 -- ════════════════════════════════════════════════
 --  AUTO UPDATE CONFIG
 -- ════════════════════════════════════════════════
-local CURRENT_VERSION  = "5.6"   -- versi script ini (admin update via panel)
+local CURRENT_VERSION  = "4.9"   -- versi script ini (admin update via panel)
 local GITHUB_RAW_URL   = "https://raw.githubusercontent.com/prime22299/autosusu/main/Autosusu.lua"
 local UPDATE_CHECK_DOC = "config/version" -- Firestore path untuk versi terbaru
 
@@ -127,7 +127,19 @@ end
 -- ════════════════════════════════════════════════
 --  MAPHACK HELPER FUNCTIONS
 -- ════════════════════════════════════════════════
-local gta = ffi.load("GTASA")
+local gta = nil
+local maphackAvailable = false
+
+pcall(function()
+    gta = ffi.load("GTASA")
+    if gta then
+        maphackAvailable = true
+    end
+end)
+
+if not maphackAvailable then
+    gta = nil
+end
 
 ffi.cdef[[
     typedef struct RwV3d {
@@ -158,6 +170,12 @@ function syncUiToVariables()
 end
 
 function loadConfig()
+    if not maphackAvailable then
+        config.settings.showNametags = false
+        chat("{FF0000}[AutoSusu]{FFFFFF} GTASA.dll not found - Maphack disabled")
+        return
+    end
+    
     local ini = inicfg.load(config, "AutoSusu_Maphack")
     if ini then
         config = ini
@@ -174,6 +192,7 @@ function saveConfig()
 end
 
 function getBonePosition(ped, bone)
+    if not maphackAvailable or gta == nil then return nil end
     local pedptr = ffi.cast("void*", getCharPointer(ped))
     if pedptr == nil then return nil end
     local posn = ffi.new("RwV3d[1]")
@@ -1014,7 +1033,7 @@ end
 -- ════════════════════════════════════════════════
 --  NAMETAG OVERLAY RENDERING
 -- ════════════════════════════════════════════════
-imgui.OnFrame(function() return config.settings.showNametags end, function()
+imgui.OnFrame(function() return maphackAvailable and config.settings.showNametags end, function()
     local draw_list = imgui.GetBackgroundDrawList()
 
     for _, char in ipairs(getAllChars()) do
@@ -1091,7 +1110,7 @@ function main()
         end
     end)
 
-    chat("{00FF00}[PrimeBot v5.6]{FFFFFF} Panel Ready! Ketik {00FF00}/autosusu")
+    chat("{00FF00}[PrimeBot v4.9]{FFFFFF} Panel Ready! Ketik {00FF00}/autosusu")
 
     wait(1000)
     silentCheck = true
@@ -1115,7 +1134,7 @@ imgui.OnFrame(
             imgui.WindowFlags.NoCollapse)
 
         imgui.Spacing()
-        imgui.TextColored(imgui.ImVec4(0,0.85,1,1), utf8("AutoSusu CPRP v5.6 — Key License"))
+        imgui.TextColored(imgui.ImVec4(0,0.85,1,1), utf8("AutoSusu CPRP v4.9 — Key License"))
         imgui.Separator()
         imgui.Spacing()
 
@@ -1208,7 +1227,7 @@ imgui.OnFrame(
         end
 
         imgui.SetNextWindowSize(imgui.ImVec2(490, 560), imgui.Cond.FirstUseEver)
-        imgui.Begin(utf8("AutoSusu CPRP v5.6 (Prime Edit)"), showPanel)
+        imgui.Begin(utf8("AutoSusu CPRP v4.9 (Prime Edit)"), showPanel)
 
         local statusLabel = botRunning
             and (botPaused and "DIJEDA" or "BOT BERJALAN")
@@ -1472,6 +1491,20 @@ imgui.OnFrame(
             -- ── TAB 5: CHEAT MENU ──
             if imgui.BeginTabItem(utf8("🎮 Cheat Menu")) then
                 imgui.Spacing()
+                
+                if not maphackAvailable then
+                    imgui.TextColored(imgui.ImVec4(1, 0.3, 0.3, 1),
+                        utf8("⚠️ GTASA.dll not found"))
+                    imgui.TextColored(imgui.ImVec4(0.8, 0.8, 0.8, 1),
+                        utf8("Maphack features disabled"))
+                    imgui.Separator()
+                    imgui.TextColored(imgui.ImVec4(0.7, 0.7, 0.7, 1),
+                        utf8("This is normal if using Android/emulator."))
+                    imgui.TextColored(imgui.ImVec4(0.7, 0.7, 0.7, 1),
+                        utf8("Nametag rendering unavailable."))
+                    imgui.EndTabItem()
+                end
+                
                 imgui.TextColored(imgui.ImVec4(0, 0.85, 1, 1),
                     utf8("🔧 Disable Maphack System"))
                 imgui.Separator()
